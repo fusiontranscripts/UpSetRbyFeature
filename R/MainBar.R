@@ -11,7 +11,10 @@ Counter <- function(data, num_sets, start_col, name_of_sets, nintersections, mba
   for( i in 1:num_sets){
     temp_data[i] <- match(name_of_sets[i], colnames(data))
   }
-  Freqs <- data.frame(count(data[ ,as.integer(temp_data)]))
+  #Freqs <- data.frame(count(data[ ,as.integer(temp_data)]))
+
+  Freqs <- cbind(data[ ,as.integer(temp_data)], freq=1) ## no aggregation
+
   colnames(Freqs)[1:num_sets] <- name_of_sets
   #Adds on empty intersections if option is selected
   if(is.null(empty_intersects) == F){
@@ -63,12 +66,15 @@ Counter <- function(data, num_sets, start_col, name_of_sets, nintersections, mba
 Make_main_bar <- function(Main_bar_data, Q, show_num, ratios, customQ, number_angles,
                           ebar, ylabel, ymax, scale_intersections, text_scale, attribute_plots){
 
+
+  Main_bar_data$fusion_name = rownames(Main_bar_data)
+
   bottom_margin <- (-1)*0.65
 
   if(is.null(attribute_plots) == FALSE){
     bottom_margin <- (-1)*0.45
   }
-  
+
   if(length(text_scale) > 1 && length(text_scale) <= 6){
     y_axis_title_scale <- text_scale[1]
     y_axis_tick_label_scale <- text_scale[2]
@@ -79,7 +85,7 @@ Make_main_bar <- function(Main_bar_data, Q, show_num, ratios, customQ, number_an
     y_axis_tick_label_scale <- text_scale
     intersection_size_number_scale <- text_scale
   }
-  
+
   if(is.null(Q) == F){
     inter_data <- Q
     if(nrow(inter_data) != 0){
@@ -88,7 +94,7 @@ Make_main_bar <- function(Main_bar_data, Q, show_num, ratios, customQ, number_an
     else{inter_data <- NULL}
   }
   else{inter_data <- NULL}
-  
+
   if(is.null(ebar) == F){
     elem_data <- ebar
     if(nrow(elem_data) != 0){
@@ -97,13 +103,13 @@ Make_main_bar <- function(Main_bar_data, Q, show_num, ratios, customQ, number_an
     else{elem_data <- NULL}
   }
   else{elem_data <- NULL}
-  
+
   #ten_perc creates appropriate space above highest bar so number doesnt get cut off
   if(is.null(ymax) == T){
   ten_perc <- ((max(Main_bar_data$freq)) * 0.1)
   ymax <- max(Main_bar_data$freq) + ten_perc
   }
-  
+
   if(ylabel == "Intersection Size" && scale_intersections != "identity"){
     ylabel <- paste("Intersection Size", paste0("( ", scale_intersections, " )"))
   }
@@ -115,7 +121,7 @@ Make_main_bar <- function(Main_bar_data, Q, show_num, ratios, customQ, number_an
     Main_bar_data$freq <- round(log10(Main_bar_data$freq), 2)
     ymax <- log10(ymax)
   }
-  Main_bar_plot <- (ggplot(data = Main_bar_data, aes_string(x = "x", y = "freq")) 
+  Main_bar_plot <- (ggplot(data = Main_bar_data, aes_string(x = "x", y = "freq"))
                     + scale_y_continuous(trans = scale_intersections)
                     + ylim(0, ymax)
                     + geom_bar(stat = "identity", width = 0.6,
@@ -128,8 +134,10 @@ Make_main_bar <- function(Main_bar_data, Q, show_num, ratios, customQ, number_an
                             axis.title.y = element_text(vjust = -0.8, size = 8.3*y_axis_title_scale), axis.text.y = element_text(vjust=0.3,
                                                                                                             size=7*y_axis_tick_label_scale)))
   if((show_num == "yes") || (show_num == "Yes")){
-    Main_bar_plot <- (Main_bar_plot + geom_text(aes_string(label = "freq"), size = 2.2*intersection_size_number_scale, vjust = -1,
-                                                angle = number_angles, colour = Main_bar_data$color))
+   #Main_bar_plot <- (Main_bar_plot + geom_text(aes_string(label = "freq"), size = 2.2*intersection_size_number_scale, vjust = -1,
+   #                                             angle = number_angles, colour = Main_bar_data$color))
+      Main_bar_plot <- (Main_bar_plot + geom_text(aes_string(label = "fusion_name"), size = 2.2*intersection_size_number_scale,
+                                                  angle = number_angles, colour = Main_bar_data$color))
   }
   bInterDat <- NULL
   pInterDat <- NULL
@@ -183,11 +191,11 @@ Make_main_bar <- function(Main_bar_data, Q, show_num, ratios, customQ, number_an
                                                  position = position_jitter(width = 0.2, height = 0.2),
                                                  colour = pElemDat$color, size = 2, shape = 17))
   }
-  
-  Main_bar_plot <- (Main_bar_plot 
+
+  Main_bar_plot <- (Main_bar_plot
                     + geom_vline(xintercept = 0, color = "gray0")
                     + geom_hline(yintercept = 0, color = "gray0"))
-  
+
   Main_bar_plot <- ggplotGrob(Main_bar_plot)
   return(Main_bar_plot)
 }
