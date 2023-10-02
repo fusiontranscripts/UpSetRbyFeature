@@ -1,5 +1,14 @@
 # UpSetR [![Travis-CI Build Status](https://travis-ci.org/hms-dbmi/UpSetR.svg?branch=master)](https://travis-ci.org/hms-dbmi/UpSetR) [![](http://www.r-pkg.org/badges/version/UpSetR)](https://cran.r-project.org/package=UpSetR) [![](http://cranlogs.r-pkg.org/badges/grand-total/UpSetR)](http://cranlogs.r-pkg.org/badges/grand-total/UpSetR)
 
+===
+Modified by bhaas to show the individual features across the y-axis to get more insights into how individual featurea are represented by the various methods.
+
+Install via:  install.packages("./", repos=NULL, type="source", INSTALL_opts = "--with-keep.source")
+
+and then load as 'library(UpsetRbyFeature)' and use the same way as UpsetR
+
+===
+
 ## Technique
 
 UpSetR generates static [UpSet](http://vcg.github.io/upset/) plots. The UpSet technique visualizes set intersections in a matrix layout and introduces aggregates based on groupings and queries. The matrix layout enables the effective representation of associated data, such as the number of elements in the aggregates and intersections, as well as additional summary statistics derived from subset or element attributes.
